@@ -4,7 +4,7 @@ import time
 import os
 import random
 
-WIN_WIDTH = 600
+WIN_WIDTH = 600 # can tweak these later if we notice the screen doesn't fit well
 WIN_HEIGHT = 800
 
 BIRD_IMGS = [pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bird1.png"))),
@@ -94,6 +94,87 @@ class Bird:
 
     def get_mask(self):
         return pygame.mask.from_surface(self.img)
+
+
+class Pipe: # we are considering each pipe to be a top and bottom
+    GAP = 200
+    VEL = 5
+
+    def __init__(self, x):
+        self.x = x 
+        self.height = 0
+
+        self.top = 0
+        self.bottom = 0
+        self.PIPE_TOP = pygame.transform.flip(PIPG_IMG, False, True)
+        self.PIPE_BOTTOM = PIPE_IMG
+
+        self.passed = False
+        self.set_height()
+
+    def set_height(self):
+        self.height = random.randrange(40, 450)
+        self.top = self.height - self.PIPE_TOP.get_height()
+        self.bottom = self.height + self.GAP
+
+    def move(self):
+        self.x -= self.VEL
+
+    def draw(self, win):
+        win.blit(self.PIPE_TOP, (self.x, self.top))
+        win.blit(self.PIPE_BOTTOM, (self.x, self.bottom))
+
+        # hitboxes explanation, make sure we only register collisions when the actual bird collisions happen
+        # therefore, use masks
+        # masks check for real collisisons by checking if the pixels that "collided" are transparent or not.
+        # compare the pixels in 2 2d lists to see what's up
+
+    def collide(self, bird):
+        bird_mask = bird.get_mask()
+
+        # now for the pipes
+        top_mask = pygame.mask.from_surface(self.PIPE_TOP)
+        bottom_mask = pygame.mask.from_surface(self.PIPE_BOTTOM)
+
+        top_offset = (self.x - bird.x, self.top - round(bird.y))
+        bottom_offset = (self.x - bird.x, self.bottom - round(bird.y))
+
+        b_point = bird_mask.overlap(bottom_mask, bottom_offset) 
+        t_point = bird_mask.overlap(top_mask, top_offset) 
+            # if they don't collide these lines return None
+
+        if t_point or b_point:
+            return True
+
+        return False
+
+class Base:
+    # have to make this move, and it's not infinitely long so it's a little complicated
+    # ask kids what they think a good solution for this would be
+    # before coding this, show a drawing of what we're doing conceptually
+    VEL = 5
+    WIDTH = BASE_IMG.get_width()
+    IMG = BASE_IMG
+
+    def __init__(self, y):
+        self.y = y
+        self.x1 = 0
+        self.x2 = self.WIDTH
+
+    def move(self):
+        self.x1 -= self.VEL
+        self.x2 -= self.VEL
+
+        if self.x1 + self.WIDTH < 0:
+            self.x1 = self.x2 + self.WIDTH
+
+        if self.x2 + self.WIDTH < 0:
+            self.x2 = self.x1 + self.WIDTH
+
+    def draw(self, win):
+        win.blit(self.IMG, (self.x1, self.y))
+        win.blit(self.IMG, (self.x2, self.y))
+
 
 
 def draw_window(win, bird):
