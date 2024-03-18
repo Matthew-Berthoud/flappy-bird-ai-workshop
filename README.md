@@ -15,7 +15,7 @@ Windows:
 ```
 py --version
 ```
-If this shows a version number, skip to the `pip` section. If not, you need to install python. Follow the instructions at [this link](https://www.python.org/downloads/). When you've finished downloading, you should be able to exit your terminal window, open a new one, and retry `python --version`. If it still doesn't work call one of us over.
+If this shows a version number at or above 3.7, skip to the `pip` section. If not, you need to install python. Follow the instructions at [this link](https://www.python.org/downloads/) to download an up to date version of python. When you've finished downloading, you should be able to exit your terminal window, open a new one, and retry `python --version`. If it still doesn't work call one of us over.
 
 ### Install `pip`
 Python's package manager is called `pip`, or Python Install Package. It allows you to essentially install code that other people wrote in order to make your code do more cool stuff.
