@@ -5,9 +5,11 @@ import os
 import random
 
 pygame.font.init()
+STAT_FONT = pygame.font.SysFont("comicsans", 50)
 
 WIN_WIDTH = 500 # can tweak these later if we notice the screen doesn't fit well
 WIN_HEIGHT = 800
+FLOOR = 730
 
 BIRD_IMGS = [pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bird1.png"))),
     pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bird2.png"))),
@@ -19,7 +21,6 @@ BG_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bg.png
 # after writing this, test to make sure there's not syntax errors
 # maybe test showing the images just in case
 
-STAT_FONT = pygame.font.SysFont("comicsans", 50)
 
 
 class Bird:
@@ -195,7 +196,7 @@ def draw_window(win, bird, pipes, base, score):
 
 def main():
     bird = Bird(230, 350)
-    base = Base(730) # 70 away from the bottom
+    base = Base(FLOOR) # 70 away from the bottom
     pipes = [Pipe(600)] # controls how close the pipes are
     win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
     clock = pygame.time.Clock()
@@ -237,7 +238,7 @@ def main():
         for r in rem:
             pipes.remove(r)
 
-        if bird.y + bird.img.get_height() >= 730:
+        if bird.y + bird.img.get_height() >= BASE_HEIGHT:
             # hit the ground
             run = False
         elif bird.y <= 0:

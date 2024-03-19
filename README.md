@@ -1,5 +1,5 @@
-# Workshop 1: Flappy Bird Game
-Today we're going to build a simple flappy bird game, which you can play by clicking the space bar to jump the bird.
+# Flappy Bird AI: Workshop 1: The Flappy Bird Game
+Today we're going to build a simple flappy bird game, which you can play by clicking the space bar to jump the bird. Next time we'll code an AI to teach itself how to play, and see if it can beat us!
 
 ## Getting Started 
 Open a Terminal (or Powershell, for Windows) window, and follow the instructions below, typing the necessary commands in your terminal.
@@ -78,26 +78,69 @@ rm imgs_b286d95d6d.zip
 Now we have a folder inside our project folder with images that we can use to animate each frame of the game!
 
 
-### First python file
-Make a file titled `flappy_bird_script.py` in your `flappy_bird_ai` folder. You can do this by creating it and saving it within your favorite text editor, like VSCode, or in the terminal from within that directory:
+### Python file
+Make a file titled `flappy_bird.py` in your `flappy_bird_ai` folder. You can do this by creating it and saving it within your favorite text editor, like VSCode, or in the terminal from within that directory:
 ```
 touch flappy_bird_script.py
 ```
 
 If you haven't already, open that file in your favorite text editor (I'll be using VSCode).
+Let's code up the initial pieces of the program. First we can copy over the following import statements, and constant definitions.
 
-### Game Skeleton
-* imports 
-* run it
-* constants
-* image constants
-* run it
-* set up simple game loop logic and talk conceptually
-* run it
+```py
+import pygame
+import neat
+import time
+import os
+import random
+
+pygame.font.init()
+STAT_FONT = pygame.font.SysFont("comicsans", 50)
+
+WIN_WIDTH = 500 # can tweak these later if we notice the screen doesn't fit well
+WIN_HEIGHT = 800
+FLOOR = 730
+
+BIRD_IMGS = [pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bird1.png"))),
+    pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bird2.png"))),
+    pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bird3.png")))]
+PIPE_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "pipe.png")))
+BASE_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "base.png")))
+BG_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bg.png")))
+```
+
+We put these variables in all caps and can refer to them as constants, since by convention we won't be changing them. The widths and heights define measurements for parts of the program, and the IMG constants are references to the image assets we downloaded.
+
+Take a look at the lines of code that get assigned to the IMG variables.
+See if you can guess what some of the methods (function names after a `.`) are doing.
+Also notice how the `os` and `pygame` library names are on the front of some of this code.
+Without having imported these libraries, we wouldn't be able to call these methods.
+
+Go ahead and run the program, just to make sure everything imports and loads in correctly, before we go any further.
+
+```
+python flappy_bird.py
+```
+
+<!-- ### Simple Game Logic
+Before we code any further let's think conceptually about how we want this game to work. One feature we'll definitely need is a **game loop**. In almost any type of game, the program running it is almost constantly recieving input. Maybe that means it's checking for updates to score, listening for user input, like key presses or mouse clicks, or maybe it's checking if a Flappy Bird has collided with a pipe. 
+
+One of the best ways to accomplish all of this in a game is to have a loop that runs with a  -->
+
 
 ## Classes
-* whiteboard the different classes, ask a lot of questions
-* then go class by class to make the program
+Let's take a step back and think about what objects we're going to need in this game. If you've ever played flappy bird, you know there's `Pipe`s and a `Bird`, at the very least. These will both need to have to attributes and abilities that we can code in.
+
+In addition to these two classes we're going to make one for the ground called `Base`, since we want it to move with the game, so that the bird can stay in the center of the screen and still look like it's moving.
+
+*What are some ideas of methods or data these classes should store?*
+
+Let's get started with some real coding!
+
+### The `Bird` Class
+
+
+
 
 ## Optional features
 On your own time, see if you want to implement some of the following:
