@@ -39,7 +39,7 @@ class Bird:
         self.img = self.IMGS[0] # starting image of wing flapping animation
 
     def jump(self):
-        self.vel = -10.5 
+        self.vel = -9.5 
             # (0,0) in pygame is top left corner
             # therefore, going up requires negative velocity, down is positive
             # left is negative velocity, right is positive

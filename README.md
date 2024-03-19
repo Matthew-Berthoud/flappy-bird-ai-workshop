@@ -1,4 +1,5 @@
-
+# Workshop 1: Flappy Bird Game
+Today we're going to build a simple flappy bird game, which you can play by clicking the space bar to jump the bird.
 
 ## Getting Started 
 Open a Terminal (or Powershell, for Windows) window, and follow the instructions below, typing the necessary commands in your terminal.
@@ -47,15 +48,12 @@ py -m ensurepip --default-pip
 Close and reopen terminal, and rerun the `--version`. If that still doesn't work, follow [these instructions](https://packaging.python.org/en/latest/tutorials/installing-packages/#ensure-you-can-run-pip-from-the-command-line). You may need to call one of us over to help you follow these instructions.
 
 
-### Installing `pygame` and NEAT Python
-Once pip is installed, run the following commands.
+### Installing `pygame` 
+Once pip is installed, run the following command
 ```
 pip install pygame
 ```
-```
-pip install neat-python
-```
-Let us know if you have any issues.
+Let us know if you have any issues. This will install pygame a python library that abstracts away a lot of the hard to code parts of game design like repainting the screen, clock ticks, and more. We'll see a lot of these features in today's workshop.
 
 ## Setting up Files
 Make a folder somewhere on your computer where you want to store this project. You can do this in File Explorer for Windows or Finder on Mac. If you're comfortable, you can also do this in the terminal by using `cd` to get to the location in which you want to create the folder, then using `mkdir` (make directory) as below:
@@ -71,9 +69,11 @@ cd flappy_bird_ai
 ```
 unzip imgs_b286d95d6d.zip
 ```
+(The zip file might have a different name for you)
+
 Make sure it created an `imgs` folder, and then remove the zip file by moving to trash, or 
 ```
-unzip imgs_b286d95d6d.zip
+rm imgs_b286d95d6d.zip
 ```
 Now we have a folder inside our project folder with images that we can use to animate each frame of the game!
 
@@ -86,15 +86,43 @@ touch flappy_bird_script.py
 
 If you haven't already, open that file in your favorite text editor (I'll be using VSCode).
 
-* imports
+### Game Skeleton
+* imports 
 * run it
 * constants
 * image constants
 * run it
+* set up simple game loop logic and talk conceptually
+* run it
 
+## Classes
+* whiteboard the different classes, ask a lot of questions
+* then go class by class to make the program
 
-## Planning the Program
-1. Bird
-2. Pipes
-3. Ground
+## Optional features
+On your own time, see if you want to implement some of the following:
+* Play again button
+    * Instead of exiting after showing "You lost" for a few seconds, 
+    * HINT: wrap main's contents in another loop
+* Add sounds
+    * Maybe a "wa wa wa" or "splat" for losing?
+    * Perhaps a "flap flap flap" for jumping?
+    * Maybe some background noises/music?
+* Leaderboard
+    * Requires players to enter a name after finishing
+    * Requires some storage of player and score data in files
+* Something else
+    * show us next time!
 
+## Next time
+Next time we'll talk about how we would train an AI to play this game, and begin the process of coding one.
+Steps (DON'T INCLUDE in workshop readme, might end up not doing git stuff)
+* init git repo:
+* commit this to main
+* make neat-ai branch
+    * going to get rid of user input stuff, change things around to implement AI
+* talk conceptually / whiteboard about AI and NN
+* download config file, explain NEAT
+* do NEAT boilerplate (go thru this fast)
+* etc... (there isn't much else)
+* optional features beyond this
