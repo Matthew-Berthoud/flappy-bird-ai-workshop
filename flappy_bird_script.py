@@ -238,10 +238,26 @@ def main():
             pipes.remove(r)
 
         if bird.y + bird.img.get_height() >= 730:
-            pass
+            # hit the ground
+            print("ground")
+            run = False
+        elif bird.y <= 0:
+            print("ceiling")
+            run = False
 
         base.move()
         draw_window(win, bird, pipes, base, score)
+
+    print("You lost with score", score)
+
+    win.fill("red")
+    text = STAT_FONT.render("Score: " + str(score), 1, (255,255,255))
+    win.blit(text, (WIN_WIDTH - 10 - text.get_width(), 10))
+    text = STAT_FONT.render("You lost.", 1, (255,255,255))
+    win.blit(text, (WIN_WIDTH // 2 - text.get_width() // 2, WIN_HEIGHT // 2 - text.get_height() // 2))
+    pygame.display.update()
+
+    time.sleep(3)
 
     pygame.quit()
     quit()
