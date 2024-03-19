@@ -32,12 +32,12 @@ class Bird:
     def __init__(self, x, y): # initialize the bird at starting location (x,y)
         self.x = x
         self.y = y
-        self.tilt = 0 # bird will be looking straight ahead
-        self.tick_count = 0
+        self.tilt = 0       # bird will be looking straight ahead
+        self.tick_count = 0 # 0 seconds since the jump so far
         self.vel = 0
-        self.height = self.y
+        self.height = self.y # setting a height variable separate from y will help us determine if bird is moving up or down.
         self.img_count = 0
-        self.img = self.IMGS[0] # starting image of wing flapping animation
+        self.img = self.IMGS[self.img_count] # starting image of wing flapping animation
 
     def jump(self):
         self.vel = -9.5 
@@ -81,7 +81,7 @@ class Bird:
             self.img = self.IMGS[2]
         elif self.img_count < self.ANIMATION_TIME*4:
             self.img = self.IMGS[1]
-        elif self.img_count < self.ANIMATION_TIME*4 + 1:
+        elif self.img_count == self.ANIMATION_TIME*4 + 1:
             self.img = self.IMGS[0]
             self.img_count = 0
 
@@ -238,7 +238,7 @@ def main():
         for r in rem:
             pipes.remove(r)
 
-        if bird.y + bird.img.get_height() >= BASE_HEIGHT:
+        if bird.y + bird.img.get_height() >= WIN_HEIGHT:
             # hit the ground
             run = False
         elif bird.y <= 0:
