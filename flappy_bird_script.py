@@ -208,6 +208,12 @@ def main():
             if event.type == pygame.QUIT: # red X in top corner of pygame window
                 run = False
                 # pygame.quit()
+        
+        # jump bird with spacebar
+        bird.move()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            bird.jump()
             
         add_pipe = False
         rem = [] # list of pipes to remove
