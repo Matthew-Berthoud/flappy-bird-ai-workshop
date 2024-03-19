@@ -219,9 +219,8 @@ def main():
         rem = [] # list of pipes to remove
         for pipe in pipes:
             if pipe.collide(bird):
-                # collided with pipe, end game
-                pass 
-                # end game, do something
+                # collided with pipe
+                run = False
             if pipe.x + pipe.PIPE_TOP.get_width() < 0:
                 rem.append(pipe)
 
