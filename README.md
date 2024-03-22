@@ -89,7 +89,6 @@ Let's code up the initial pieces of the program. First we can copy over the foll
 
 ```py
 import pygame
-import neat
 import time
 import os
 import random
