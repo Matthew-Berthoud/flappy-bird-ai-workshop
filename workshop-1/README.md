@@ -81,7 +81,7 @@ Now we have a folder inside our project folder with images that we can use to an
 ### Python file
 Make a file titled `flappy_bird.py` in your `flappy_bird_ai` folder. You can do this by creating it and saving it within your favorite text editor, like VSCode, or in the terminal from within that directory:
 ```
-touch flappy_bird_script.py
+touch flappy_bird.py
 ```
 
 If you haven't already, open that file in your favorite text editor (I'll be using VSCode).
