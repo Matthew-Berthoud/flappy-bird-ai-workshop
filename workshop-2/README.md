@@ -31,7 +31,7 @@ In our images folder, we have a base image. That image is only a little bit long
   <summary>
     What are some good ways we can accomplish this?
   </summary>
-  Let's take two intances of the base images, one spanning the bottom of the screen, and one to the right of it just off screen, and move them left. Then, when the first one gets completely offscreen, we can place it to the right of the second one, and repeat the cycle. Let's code this.
+  Let's take two instances of the base images, one spanning the bottom of the screen, and one to the right of it just off screen, and move them left. Then, when the first one gets completely offscreen, we can place it to the right of the second one, and repeat the cycle. Let's code this.
 </details>
 
 ### Constructor
@@ -40,7 +40,7 @@ We first can define some constants and initialize the positions of the two base 
 
 Our constructor is going to set the first base image to align with the left side of the screen, and the second one to align with the right end of the first one, as we discussed.
 
-We're also going to take in the y coordinate of the base as an argument, and set that so the y coordinate for both the base images
+We're also going to take in the y coordinate of the base as an argument, and set that so the y coordinate for both the base images is the same.
                                                                         
 ```py
 class Base:
@@ -119,7 +119,7 @@ def main():
     ...
 ```
 
-We'll have to add a base argument to the `draw_window` signature, for the above to work. Now within draw window, we can run the method. 
+We'll have to add a base argument to the `draw_window` signature, for the above to work. Now within `draw_window`, we can run the method. 
 
 ```py
 def draw_window(win, bird, base):
@@ -154,19 +154,24 @@ Onto our final class, `Pipe`!
 class Pipe:
     # constants
 
-    def __init__(self, x)
+    def __init__(self, x):
+        pass
 
-    def set_height(self)
+    def set_height(self):
+        pass
     
-    def move(self)
+    def move(self):
+        pass
     
-    def draw(self, win)
+    def draw(self, win):
+        pass
     
-    def collide(self, bird)
+    def collide(self, bird):
+        pass
 ```
 </details>
 
-Like `Base`, pipes are going to move left at a constant speed to give the illusion that the bird is moving. Pipes should move at the same rate as the ground, so let's define a class constant for `Pipe` with the same value as `Base`:
+Like `Base`, pipes are going to move left at a constant speed to give the illusion that the bird is moving. Pipes should move at the same rate as the ground, so let's define a class constant for `Pipe`'s velocity with the same value as `Base`:
 
 ```python
 class Pipe:
@@ -242,7 +247,7 @@ Imagine each of our objects we see on the screen is contained in a box. The box 
 
 To detect collisions, we want to check if there is any overlap between objects.  We could do this just using our pngs with their tiny perimeter boxes, and many games do. But, since Flappy Bird is all about collisions, being a few pixels off in what the player sees as a collision and what the game reads as a collision matters a good deal.
 
-Instead, we can use a **mask**. A mask is a bitmap that takes our png and sets all the opaque pixels and does not set transparent pixels. In other words, our mask takes our straight-edged box and vacuum-seal the interior to shrink about the visible object. Pygame has a built-in module to create and manage masks, called `Mask` (very descriptive).
+Instead, we can use a **mask**. A mask is a bitmap that takes our png and sets all the opaque pixels and does not set transparent pixels. In other words, our mask takes our straight-edged box and vacuum-seals the interior around the visible object. Pygame has a built-in module to create and manage masks, called `Mask` (very descriptive).
 
 Let's make use of this module, first in the `Bird` class. We're going to write a simple function that uses the `Mask` module to create a mask from the bird png. Here's what that's going to look like:
 
@@ -262,7 +267,7 @@ Next, we'll write the `collide` function in our `Pipe` class.
         top_mask = pygame.mask.from_surface(self.PIPE_TOP)
         bottom_mask = pygame.mask.from_surface(self.PIPE_BOTTOM)
 
-        # Find offset of bird in relation to each pipe
+        # Find offset of each pipe in relation to bird
         top_offset = (self.x - bird.x, solf.top - round(bird.y))
         bottom_offset = (self.x - bird.x, self.bottom - round(bird.y))
 
@@ -288,13 +293,17 @@ The last thing we need to do is add the pipes to our game loop. In `main`, we're
     def main():
         bird = Bird(230, 350)
         base = Base(FLOOR)
-        pipes = [Pipe(600)] # Addition here
+        pipes = [Pipe(600)]     # Addition here. 600 is the x-coordinate for the pipe.
         ...
 ```
 
-*Who can tell me what the 600 parameter is in `Pipe(600)`?*
+Next, we're going to add some logic to the game loop to check 
 
-Next, we're going to add some logic to the game loop to check a) if the bird has collided with the pipe, using our nice `collide` function we just wrote, b) if a set of pipes has gone offscreen and needs to be removed, and c) if the bird has successfully cleared a pipe and we need to add a new one. We can do this with a series of if statements.
+(a) if the bird has collided with the pipe, using our nice `collide` function we just wrote, 
+
+(b) if a set of pipes has gone offscreen and needs to be removed, and 
+
+(c) if the bird has successfully cleared a pipe and we need to add a new one. We can do this with a series of if statements.
 
 ```python
 def main():
@@ -312,6 +321,10 @@ def main():
             add_pipe = True
 
         pipe.move()
+
+    # Add a new pipe offscreen if necessary
+    if add_pipe:
+        pipes.append(Pipe(700))
 
     # Remove pipes that have gone offscreen
     for r in rem:
@@ -338,7 +351,6 @@ def draw_window(win, bird, pipes, base):
     ...
 ```
 </details>
-
 
 
 Our game is now playable! 
