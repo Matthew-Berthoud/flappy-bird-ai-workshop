@@ -1,5 +1,5 @@
 # Flappy Bird AI: Workshop 1: The Flappy Bird Game
-Today we're going to build a simple flappy bird game, which you can play by clicking the space bar to jump the bird. Next time we'll code an AI to teach itself how to play, and see if it can beat us!
+Today we're going to start building a simple flappy bird game, which you can play by clicking the space bar to jump the bird. Later in this series we'll code an AI to teach itself how to play, and see if it can beat us!
 
 ## Getting Started 
 Open a Terminal (or Powershell, for Windows) window, and follow the instructions below, typing the necessary commands in your terminal.

@@ -209,9 +209,11 @@ Notice that we call `set_height()` at the bottom of our init function. This func
 Next, we'll write our `move` and `draw` functions. These'll be pretty simple and similar to `Base`'s functions.
 
 ### Move
+Every game tick, the pipe should move left a constant amount, its velocity. We don't need to have any special movement code like we did in Base, since each pipe only exists for the time it's on the screen. 
+
 <details>
     <summary>
-    Every game tick, the pipe should move left a constant amount, its velocity. We don't need to have any special movement code like we did in Base, since each pipe only exists for the time it's on the screen. What should this function look like? (Hint: it's a one-liner.)
+    What should this function look like? (Hint: it's a one-liner.)
     </summary>
 
 ```python
@@ -234,15 +236,108 @@ Remember, the syntax for the `blit` function is `blit(image, (x, y))`, where (x,
 
 
 ### Collide
-Last, but most definitely not least, we need a function that'll tell us when our bird rams into a pipe. Before we get into coding it, let's do a quick lesson on collision detection.
+Last, but most definitely not least, we need a function that'll tell us when our bird rams into a pipe. Before we get into coding it, let's do a quick lesson on collision detection and masks.
 
-Imagine each of our objects we see on the screen is contained in a box. The box is as small as possible, with only 
+Imagine each of our objects we see on the screen is contained in a box. The box has straight edges and is as small as possible, with the edges of the box touching as many of the object's edges as possible. This is how our pngs are structured. 
+
+To detect collisions, we want to check if there is any overlap between objects.  We could do this just using our pngs with their tiny perimeter boxes, and many games do. But, since Flappy Bird is all about collisions, being a few pixels off in what the player sees as a collision and what the game reads as a collision matters a good deal.
+
+Instead, we can use a **mask**. A mask is a bitmap that takes our png and sets all the opaque pixels and does not set transparent pixels. In other words, our mask takes our straight-edged box and vacuum-seal the interior to shrink about the visible object. Pygame has a built-in module to create and manage masks, called `Mask` (very descriptive).
+
+Let's make use of this module, first in the `Bird` class. We're going to write a simple function that uses the `Mask` module to create a mask from the bird png. Here's what that's going to look like:
+
+```python
+    def get_mask(self):
+        return pygame.mask.from_surface(self.img)   # Create a mask from a given surface (bird png)
+```
+
+Next, we'll write the `collide` function in our `Pipe` class. 
+
+```python
+    def collide(self, bird):
+        # Get bird mask
+        bird_mask = bird.get_mask()
+
+        # Create pipe masks
+        top_mask = pygame.mask.from_surface(self.PIPE_TOP)
+        bottom_mask = pygame.mask.from_surface(self.PIPE_BOTTOM)
+
+        # Find offset of bird in relation to each pipe
+        top_offset = (self.x - bird.x, solf.top - round(bird.y))
+        bottom_offset = (self.x - bird.x, self.bottom - round(bird.y))
+
+        # Check if bird mask overlaps with pipe mask. If they don't, these lines return None
+        b_point = bird_mask.overlap(bottom_mask, bottom_offset) 
+        t_point = bird_mask.overlap(top_mask, top_offset) 
+
+        # If either t_point or b_point are not None, we have a collision
+        if t_point or b_point:
+            return True
+
+        return False
+```
+
+[Visualization of offsets.](https://www.pygame.org/docs/ref/mask.html#mask-offset-label)
 
 
-- pipe code in main
+### Back to main
 
+The last thing we need to do is add the pipes to our game loop. In `main`, we're going to define the pipes as a list, so that we can add and remove to it as needed. Add this line to the top of the `main` function:
 
+```python
+    def main():
+        bird = Bird(230, 350)
+        base = Base(FLOOR)
+        pipes = [Pipe(600)] # Addition here
+        ...
+```
 
+*Who can tell me what the 600 parameter is in `Pipe(600)`?*
+
+Next, we're going to add some logic to the game loop to check a) if the bird has collided with the pipe, using our nice `collide` function we just wrote, b) if a set of pipes has gone offscreen and needs to be removed, and c) if the bird has successfully cleared a pipe and we need to add a new one. We can do this with a series of if statements.
+
+```python
+def main():
+    ...
+        
+    add_pipe = False
+    rem = []  # list of pipes to remove
+    for pipe in pipes:
+        if pipe.collide(bird):                      # (a)
+            run = False
+        if pipe.x + pipe.PIPE_TOP.get_width() < 0:  # (b)
+            rem.append(pipe)
+        if not pipe.passed and pipe.x < bird.x:     # (c)
+            pipe.passed = True
+            add_pipe = True
+
+        pipe.move()
+
+    # Remove pipes that have gone offscreen
+    for r in rem:
+        pipes.remove(r)
+    
+    base.move()
+    draw_window(win, bird, pipes, base)  # Change here!
+```
+
+Notice that we added another parameter to the `draw_window` function call. Let's go back and edit `draw_window` to reflect that.
+
+<details>
+<summary>
+Remember that `pipes` is a list. How will the code look for drawing each pipe onscreen?
+</summary>
+
+```python
+def draw_window(win, bird, pipes, base):
+    win.blit(BG_IMG, (0,0))
+
+    for pipe in pipes:
+        pipe.draw(win)
+
+    ...
+```
+</details>
 
 
 
@@ -277,7 +372,7 @@ def main():
         
         ...
 ```
-<details>
+</details>
 
 *Would a volunteer like to come up and play the game to see if the score is working?* (I am bad at this game and cannot do it myself)
 
@@ -323,7 +418,7 @@ Another problem we notice is that when you hit a pipe, the game ends and the pro
 There are a number of ways we could change our game design to handle this, like playing some sad music before quitting, or sending the user to a home screen where they could choose to play again, etc. For our purposes, we're going to keep it simple and just tell the player they lost, wait a few seconds, then quit the program as normal.
 
 <details>
-<summary>How can we tell when the game is over</summary>
+<summary>How can we tell when the game is over?</summary>
 
 1. When `run` is `False`
 2. When we've exited the game loop (because `run` is `False`)
@@ -393,7 +488,7 @@ win.blit(text, (WIN_WIDTH / 2, WIN_HEIGHT / 2))
 
 It's placing the top left corner of the textfield in the center.
 
-<details>
+</details>
 
 <details>
 <summary>How can we fix it?</summary>
@@ -405,7 +500,7 @@ win.blit(text, (WIN_WIDTH / 2 - text.get_width() / 2, WIN_HEIGHT / 2 - text.get_
 ```
 
 Let's run that.
-<details>
+</details>
 
 That looks great!
 
@@ -415,7 +510,7 @@ As it stands right now, players can fly over or under the pipe images and never 
 <details>
 <summary>How can we fix this?</summary>
 Let's add some code that makes colliding with the floor or the ceiling just as dangerous as colliding with a pipe.
-</details>
+
 
 ```py
 def main():
@@ -439,7 +534,7 @@ def main():
 ```
 
 This will make our game loop end when we hit the ground, the ceiling, or a pipe.
-
+</details>
 Let's test it!
 
 
@@ -451,6 +546,3 @@ If you find yourself bored over the next week, see if you can implement some of 
 * Sound effects and/or music
 
 Next time, we're going to redownload a simple version of the code, without any user input, so that we can have an AI run the game.
-
-
-
