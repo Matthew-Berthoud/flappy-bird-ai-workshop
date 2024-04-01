@@ -152,7 +152,7 @@ class Base:
         win.blit(self.IMG, (self.x2, self.y))
     
 
-def draw_window(win, bird, pipes, base, score, run):
+def draw_window(win, bird, pipes, base, score):
     win.blit(BG_IMG, (0,0))
 
     for pipe in pipes:
@@ -164,10 +164,6 @@ def draw_window(win, bird, pipes, base, score, run):
     text = STAT_FONT.render("Score: " + str(score), 1, (255,255,255))
     win.blit(text, (WIN_WIDTH - 10 - text.get_width(), 10))
 
-    if not run:
-        text = STAT_FONT.render("You Lost!", 1, (255,0,0))
-        win.blit(text, (WIN_WIDTH / 2 - text.get_width() / 2, WIN_HEIGHT / 2 - text.get_height() / 2))
-    
     pygame.display.update()
 
 
@@ -188,12 +184,6 @@ def main():
         
         bird.move()
 
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
-            bird.jump()
-        #     if spacebar pressed
-        #         jump
-
         add_pipe = False
         rem = []
         for pipe in pipes:
@@ -209,7 +199,6 @@ def main():
 
         if add_pipe:
             score += 1
-            print(score)
             pipes.append(Pipe(700))
 
         for r in rem:
@@ -219,9 +208,8 @@ def main():
             run = False
 
         base.move()
-        draw_window(win, bird, pipes, base, score, run)
+        draw_window(win, bird, pipes, base, score)
 
-    time.sleep(3)
     pygame.quit()
     return
 
