@@ -120,7 +120,21 @@ Now that we've talked conceptually about what we're going to do, we can dive int
 
 Lots of this is the default settings, and we won't get into all of it(again, I encourage you to read more for yourself from [the documentation](https://neat-python.readthedocs.io/en/latest/)), but we'll touch on some key settings. 
 
-First look at
+First look at the top group of 5 lines
+```
+[NEAT]
+fitness_criterion     = max
+fitness_threshold     = 100
+pop_size              = 20
+reset_on_extinction   = False
+```
+
+These are the basic settings: 
+* `fitness criterion = max` makes sure we're keeping the MOST fit birds, not the least fit. Not sure why we'd keep the least fit, but feel free to look that up
+* `fitness threshold = 100` sets the 
+
+
+* `pop_size` sets the number of birds in each generation
 
 ...
 
