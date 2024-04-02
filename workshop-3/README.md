@@ -378,3 +378,7 @@ With all that done, your code should be done and ready to run! Enjoy watching yo
 ```
 python flappy_bird_ai.py
 ```
+
+Also, feel free to mess with the parameters in the config file and the various places where we add or remove fitness to see if you can get the birds to perform better or worse!
+
+This is likely our last workshop of the semester, so thank you all for coming, and we'll see you next time!
