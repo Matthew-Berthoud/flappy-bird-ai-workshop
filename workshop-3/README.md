@@ -1,5 +1,5 @@
 # Flappy Bird AI: Workshop 3: Building an AI to Learn the Game
-The past couple weeks we've built a flappy bird game with pygame that we can play on our computer by clicking the spacebar. Today we're going to 
+The past couple weeks we've built a Flappy Bird game with Pygame that we can play on our computer by clicking the spacebar. Today we're going to 
 1. download a new skeleton file with some of those features removed, so that we can build an AI that will learn the game. Then, 
 2. we're going to talk about neural networks, and genetic algorithms
 3. we're going to write the code that will have an AI learn our game
@@ -13,7 +13,7 @@ Double check you have `pygame` installed with the setup instructions in [Worksho
 
 
 ### NEAT installation
-Next, we're going to install a python library called `NEAT`, by running 
+Next, we're going to install a Python library called `NEAT`, by running 
 ```
 pip install neat
 ```
@@ -23,8 +23,8 @@ just like how we installed `pygame` in the first workshop.
 ### Two new files
 Make two new files called `flappy_bird_ai.py` and `config-feedforward.txt` in the same directory you've been using for this workshop, and copy over the code from those files in this repo (alternatively, you could download both files).
 
-The python file is a simplified version of the flappy bird code we've been writing, with some features removed, such as accepting user input.
-By having two separate files, you can work on your human-playable flappy bird game separately from your AI-playable game, and have both availible.
+The Python file is a slightly simplified version of the Flappy Bird code we've been writing, with some features removed, such as accepting user input.
+By having two separate files, you can work on your human-playable Flappy Bird game separately from your AI-playable game, and have both availible.
 
 <details>
 <summary>What are the differences between last week's file and this week's file?</summary>
@@ -68,7 +68,7 @@ A neural network is a Machine Learning (ML) or AI model that tries to make decis
 
 2. Hidden Layer(s)
 
-    This is where input data gets transformed into output data, through a series of neurons and weights. Our model will build the hidden layer for us, over the course of "generations." More on this later
+    This is where input data gets transformed into output data, through a series of neurons and weights. Our NEAT model will build the hidden layer for us, over the course of "generations." More on this later.
 
 3. Output Layer/Node
 
@@ -81,7 +81,7 @@ A neural network is a Machine Learning (ML) or AI model that tries to make decis
 
 </details>
 
-Our flappy bird will get a neural network associated with it. Each time the game loop runs, our network will take in these input layer numbers (bird, and pipe positions), multiply them by some weight numbers, take the sum of all that, and then pass that weighted sum into an **activation function**.
+Our flappy bird will get a neural network associated with it. Each time the game loop runs, our network will take in these input layer numbers (bird, and pipe positions). The hidden layer multiplies the inputs by some weight numbers, takes the sum of all that, and then passes that weighted sum into an **activation function**, which gives us our output layer.
 
 <details>
 <summary>What is an activation function?</summary>
@@ -90,7 +90,7 @@ Since our outcome needs to be a binary decision (either jump or don't jump) we n
 
 We're going to use the `tanh` function, which maps any x value to a value between 0 and -1, with positive values going to 1 and negative values going to -1. 
 
-Then we can select a cutoff point, below which the bird won't jump and above which the bird will jump
+Then we can select a cutoff point, below which the bird won't jump and above which the bird will jump.
 
 </details> 
 
@@ -104,21 +104,23 @@ NEAT will determine the weights. More on this soon. NEAT will also determine whe
 
 ### NEAT: NeuroEvolution of Augmenting Topologies
 
-We need some way of choosing weights such that weighted sum of our input variables (the positions of the pipe bottom, pipe top, and bird), subject to the activation function, only have a value near one when the bird truly should jump.
+We need some way of choosing weights such that weighted sum of our input variables (the positions of the pipe bottom, pipe top, and bird), subject to the activation function, only have a value above our cutoff point when the bird truly should jump.
 
 There are many many ways to train neural networks, but for this model we've chosen to use a form of NeuroEvolution. The basic idea behind neuroevolution is that there are generations of a species of neural networks, such that successful neural networks prevail and reproduce, and unsuccessful neural networks die out.
 
-This sounds a little abstract. What it means in our case is we're going to run the game with like 20 birds simultaneously. Each bird will have a neural network assigned to it, with randomly selected weights. The birds will play the game, making a decision to jump or not on every tick based on the input data for their current position relative to the pipes. As birds hit the pipes, they "die." Once every bird in the generation dies, the few that made it the furthest "reproduce," meaning essentially that the next generation of birds will have weights similar to theirs, with some randomness thrown in. In theory, if we let this run enough times, there will eventually be a bird that becomes at fit with its environment, and is perfect at flappy bird.
+This sounds a little abstract. What it means in our case is we're going to run the game with like 20 birds simultaneously. Each bird will have a neural network assigned to it, with randomly selected weights. The birds will play the game, making a decision to jump or not on every tick based on the input data for their current position relative to the pipes. As birds hit the pipes, they "die." Once every bird in the generation dies, the few that made it the furthest "reproduce," meaning essentially that the next generation of birds will have weights similar to theirs, with some randomness thrown in. In theory, if we let this run enough times, there will eventually be a bird that becomes at fit with its environment, and is perfect at Flappy Bird.
 
-The NEAT model in particular does some specific things we won't get into in order to derive the weights between generations. This is what the "Augmenting Topologies" refers to.
+The NEAT algorithm takes care of deriving the weights between generations so that we don't have to. This is what the "Augmenting Topologies" refers to.
 
 For more information about NEAT, the original researchers who developed NEAT wrote a somewhat digestible 6-page paper you can find [here](https://nn.cs.utexas.edu/downloads/papers/stanley.cec02.pdf). Also, refer to the NEAT python API [here](https://neat-python.readthedocs.io/en/latest/). 
 
 
 ### NEAT python configuration
-Now that we've talked conceptually about what we're going to do, we can dive into doing it! Go ahead and open the `config-feedforward.txt` file we had you copy/download. This file is required by the NEAT Python API in order to conduct the Neuroevolution algorithm. 
+Now that we've talked conceptually about what we're going to do, we can dive into doing it! Go ahead and open the `config-feedforward.txt` file we had you copy/download. This file is required by the NEAT Python API in order to conduct the NeuroEvolution algorithm. 
 
 Lots of this is the default settings, and we won't get into all of it(again, I encourage you to read more for yourself from [the documentation](https://neat-python.readthedocs.io/en/latest/)), but we'll touch on some key settings. 
+
+The config file is separated into several sections with bracketed titles. The ones we care about most are `[NEAT]`, which defines settings for the general algorithm, and `[DefaultGenome]`, which defines settings for a single genome (bird).
 
 Some notable lines in this config file are:
 * `fitness criterion = max` makes sure we're keeping the MOST fit birds, not the least fit. Not sure why we'd keep the least fit, but feel free to look that up
@@ -130,14 +132,15 @@ Some notable lines in this config file are:
 * The `# bias options` have to do with bias, which we can think of as another node feeding into the result, like a y-intercept of sorts
 * The `# network parameters` are just the starting number of nodes that we talked about, but as we can see there's  some other sections that deal with adding/removing hidden layer nodes
 * the `#connection enable options` make it so that 1% of the time, when generating a new bird, a neural network connection is removed (weight set to 0)
-* Way at the bottom, the `max_stagnation` is set to `20`, meaning if 20 generations go by without the fitness increasing, the program will terminate.
+* Way at the bottom, the `max_stagnation` is set to `20`, meaning if 20 generations go by without the fitness increasing, that genome (bird) is considered stagnant and will be removed.
+
 
 
 ## Let's code
 
 The first thing we need to do to work with NEAT is load in this configuration file that we just talked about.
 
-Let's make a new main "function" (not really a function) to put this code in. I'll explain why we're making this new main soon.
+Let's make a new main "function" (not really a function) to put this code in. Per Python syntax, this function is what runs when the program starts. I'll explain why we're making this new main soon.
 
 The first line below gets the directory where the file we're coding is located. The second line creates a filepath from that plus the name of the config file we just talked about. Then, we pass that into a new function we'll write called `run`.
 
@@ -151,7 +154,7 @@ if __name == "__main__":
     run(config_path)
 ```
 
-Now, in the `run` function, this first line initializes the neat configuration with all the settings we set up in that config file. Notice how the headings in the config file match these parameters we're passing. The second line sets up a neat `Population` with those settings.
+Now, in the `run` function, this first line initializes the NEAT configuration with all the settings we set up in that config file. Notice how the headings in the config file match these parameters we're passing. The second line sets up a neat `Population` with those settings.
 
 ```py
 def run(config_path):
@@ -160,19 +163,18 @@ def run(config_path):
     p = neat.Population(config)
 ```
 
-Now we're going to add some "reporters" to the population that will print important information about each generation in the terminal, as we run the code later.
+Now we're going to add some "reporters" to the population that will print important information about each generation in the terminal, as we run the code later. The first one allows NEAT to print to the terminal, the second is one of NEAT's reporter types that will print out important information about the most fit genomes.
 
 ```py
 def run(config_path):
     ... 
 
     p.add_reporter(neat.StdOutReporter(True))
-    stats = neat.StatisticsReporter()
-    p.add_reporter(stats)
+    p.add_reporter(neat.StatisticsReporter())
 
 ```
 
-The final line of our `run` function is actually going to run something, now that our neat model is all configured and ready to go. The argument that right now is just `???` will be the name of a fitness function to run, and the `50` is how many generations, or times it will run. In our case, we'll probably get a perfect bird well before the 50th generation.
+The final line of our `run` function is actually going to run something, now that our NEAT model is all configured and ready to go. The argument that right now is just `???` will be the name of a fitness function to run, and the `50` is how many generations, or times it will run. In our case, we'll probably get a perfect bird well before the 50th generation.
 
 ```py 
 def run(config_path):
@@ -186,30 +188,30 @@ def run(config_path):
 
 Run the game loop, but with 20 birds at the same time. So, we can pass in the main function to this commmand, and the score achieved by each bird will be that bird's fitness!
 
-Be sure to remove the call to `main` from the outermost scope now, since it gets called from in here
+Be sure to remove the call to `main` from the outermost scope now, since it gets called from in here.
 
 </details>
 
 ### Collisions and fitness
 
-Now we have to modify `main` to take in `genomes` and `config`. We'll also begin keeping track of generation as a global variable, so it retains its value between calls to main. Each time main runs, however, is a different generation, so we'll increment it at the start.
+Now we have to modify `main` to take in `genomes` and `config`. Let's also change the name of the function to `eval_genomes`, so that it's more clear what it's doing. We'll also begin keeping track of generation as a global variable, so it retains its value between calls to main. Each generation is one instance of `eval_genomes` runnning; i.e. the game running until all of our flappy bird genomes die.
 
 ```py
-GEN = 0
+generation = 0
 
 ...
 
-def main(genomes, config): 
-    global GEN
-    GEN += 1
+def eval_genomes(genomes, config): 
+    global generation
+    generation += 1
 ```
 
-Now, since we want to run this with multiple birds instead of just 1, we have to make a list of birds that the function will work with. Now, for the collision detection, we have to check pipe collisions for ALL the birds, and floor or ceiling collisions for ALL the birds.
+Now, since we want to run this with multiple birds instead of just 1, we have to make a list of birds that the function will work with. This means that for the collision detection, we have to check pipe collisions for ALL the birds, and floor or ceiling collisions for ALL the birds.
 
 ```py
-def main(genomes, config):
-    global GEN
-    GEN += 1
+def eval_genomes(genomes, config):
+    global generation
+    generation += 1
 
     birds = []
 
@@ -229,7 +231,7 @@ def main(genomes, config):
     ...
 
     for x, bird in enumerate(birds):
-        if bird.y + bird.img.get_height() >= 730 or bird.y < 0: # don't let birds go outside of top or bottom of screen to get around pipes
+        if bird.y + bird.img.get_height() >= FLOOR or bird.y < 0: # don't let birds go outside of top or bottom of screen to get around pipes
             # bird dies
             pass
 ```
@@ -254,7 +256,7 @@ for _, g in genomes:
     birds.append(Bird(230, 350))
 ```
 
-Now we can write the necessary code to "kill" our birds when they collide with a pipe, or the ground. Write the following code in both locations. The first line removes some fitness if they hit the pipe, so that there is some differentiation between birds who have the same score, one of whom hit the pipe and one of whom continued.
+Now we can write the necessary code to "kill" our birds when they collide with a pipe, or the ground. Write the following code in both for loops. The first line removes some fitness if they hit the pipe, so that there is some differentiation between birds who have the same score, one of whom hit the pipe and one of whom continued.
 
 ```py
 ge[x].fitness -= 1
@@ -355,20 +357,16 @@ def draw_window(win, birds, pipes, base, score, gen):
 
 ### Cleaning up
 
-Since `main` is no longer our main function, we can
-1. Rename it to `eval_genomes`, just for good practice, so it's clearer what it does
-2. Move the `pygame.quit()` and `return` lines from outside the loop, to after our confitional checking for `pygame.QUIT`
-    1. We want to run multiple generations, not quit every time we're outside the game loop.
-    2. Also change `return` to `quit()` since returning from main won't exit the program anymore
-    ```py
-    while run:
-        clock.tick(30)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT: # red X in top corner of pygame window
-                run = False
-                pygame.quit()
-                quit()
-    ```
+Since `main` is no longer our main function, we can move the `pygame.quit()` and `return` lines from outside the loop, to after our conditional checking for `pygame.QUIT`. We want to run multiple generations, not quit every time we're outside the game loop. Also change `return` to `quit()` since returning from main won't exit the program anymore
+```py
+while run:
+    clock.tick(30)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: # red X in top corner of pygame window
+            run = False
+            pygame.quit()
+            quit()
+```
 
 ___
 
