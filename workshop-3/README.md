@@ -120,23 +120,17 @@ Now that we've talked conceptually about what we're going to do, we can dive int
 
 Lots of this is the default settings, and we won't get into all of it(again, I encourage you to read more for yourself from [the documentation](https://neat-python.readthedocs.io/en/latest/)), but we'll touch on some key settings. 
 
-First look at the top group of 5 lines
-```
-[NEAT]
-fitness_criterion     = max
-fitness_threshold     = 100
-pop_size              = 20
-reset_on_extinction   = False
-```
-
-These are the basic settings: 
+Some notable lines in this config file are:
 * `fitness criterion = max` makes sure we're keeping the MOST fit birds, not the least fit. Not sure why we'd keep the least fit, but feel free to look that up
-* `fitness threshold = 100` sets the 
-
-
+* Whenever we reach a `fitness_threshold` of 100, we'll terminate the program, because this means we have a bird that is performing well enough
 * `pop_size` sets the number of birds in each generation
-
-...
+* `reset_on_extinction = False` makes it so that the program doesn't quit if all the birds die
+* The `# node activation options` make it so we only use the tanh activation function, and never change that
+* The `# node aggregation options` make sure we don't do anything besides a weighted sum to "aggregate" the nodes before passing that into the activation function
+* The `# bias options` have to do with bias, which we can think of as another node feeding into the result, like a y-intercept of sorts
+* The `# network parameters` are just the starting number of nodes that we talked about, but as we can see there's  some other sections that deal with adding/removing hidden layer nodes
+* the `#connection enable options` make it so that 1% of the time, when generating a new bird, a neural network connection is removed (weight set to 0)
+* Way at the bottom, the `max_stagnation` is set to `20`, meaning if 20 generations go by without the fitness increasing, the program will terminate.
 
 ## Let's code
 
