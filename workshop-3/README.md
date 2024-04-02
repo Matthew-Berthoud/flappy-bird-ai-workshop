@@ -102,17 +102,22 @@ NEAT will determine the weights. More on this soon. NEAT will also determine whe
 </details>
 
 
-### NEAT
+### NEAT: NeuroEvolution of Augmenting Topologies
 
-not written yet...
+We need some way of choosing weights such that weighted sum of our input variables (the positions of the pipe bottom, pipe top, and bird), subject to the activation function, only have a value near one when the bird truly should jump.
 
+There are many many ways to train neural networks, but for this model we've chosen to use a form of NeuroEvolution. The basic idea behind neuroevolution is that there are generations of a species of neural networks, such that successful neural networks prevail and reproduce, and unsuccessful neural networks die out.
 
+This sounds a little abstract. What it means in our case is we're going to run the game with like 20 birds simultaneously. Each bird will have a neural network assigned to it, with randomly selected weights. The birds will play the game, making a decision to jump or not on every tick based on the input data for their current position relative to the pipes. As birds hit the pipes, they "die." Once every bird in the generation dies, the few that made it the furthest "reproduce," meaning essentially that the next generation of birds will have weights similar to theirs, with some randomness thrown in. In theory, if we let this run enough times, there will eventually be a bird that becomes at fit with its environment, and is perfect at flappy bird.
 
+The NEAT model in particular does some specific things we won't get into in order to derive the weights between generations. This is what the "Augmenting Topologies" refers to.
 
-
-For more information about NEAT, the original researchers who developed NEAT wrote a somewhat digestible 6-page paper you can find [here](https://nn.cs.utexas.edu/downloads/papers/stanley.cec02.pdf). Also, refer to NEAT python API [here](https://neat-python.readthedocs.io/en/latest/). 
+For more information about NEAT, the original researchers who developed NEAT wrote a somewhat digestible 6-page paper you can find [here](https://nn.cs.utexas.edu/downloads/papers/stanley.cec02.pdf). Also, refer to the NEAT python API [here](https://neat-python.readthedocs.io/en/latest/). 
 
 
 ## Let's code
+Now that we've talked conceptually about what we're going to do, we can dive into doing it! Go ahead and open the `config-feedforward.txt` file we had you copy/download. This file is required by the NEAT Python API in order to conduct the Neuroevolution algorithm. 
 
-not written yet...
+Lots of this is the default settings, and we won't get into all of it(again, I encourage you to read more for yourself from [the documentation](https://neat-python.readthedocs.io/en/latest/)), but we'll touch on some key settings. 
+
+First look at
