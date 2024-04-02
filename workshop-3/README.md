@@ -132,6 +132,249 @@ Some notable lines in this config file are:
 * the `#connection enable options` make it so that 1% of the time, when generating a new bird, a neural network connection is removed (weight set to 0)
 * Way at the bottom, the `max_stagnation` is set to `20`, meaning if 20 generations go by without the fitness increasing, the program will terminate.
 
+
 ## Let's code
 
+The first thing we need to do to work with NEAT is load in this configuration file that we just talked about.
+
+Let's make a new main "function" (not really a function) to put this code in. I'll explain why we're making this new main soon.
+
+The first line below gets the directory where the file we're coding is located. The second line creates a filepath from that plus the name of the config file we just talked about. Then, we pass that into a new function we'll write called `run`.
+
+```py
+def run(config_path):
+    pass
+
+if __name == "__main__":
+    local_dir = os.path.dirname(__file__)
+    config_path = os.path.join(local_dir, "config-feedforward.txt")
+    run(config_path)
+```
+
+Now, in the `run` function, this first line initializes the neat configuration with all the settings we set up in that config file. Notice how the headings in the config file match these parameters we're passing. The second line sets up a neat `Population` with those settings.
+
+```py
+def run(config_path):
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, 
+                    neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
+    p = neat.Population(config)
+```
+
+Now we're going to add some "reporters" to the population that will print important information about each generation in the terminal, as we run the code later.
+
+```py
+def run(config_path):
+    ... 
+
+    p.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    p.add_reporter(stats)
+
+```
+
+The final line of our `run` function is actually going to run something, now that our neat model is all configured and ready to go. The argument that right now is just `???` will be the name of a fitness function to run, and the `50` is how many generations, or times it will run. In our case, we'll probably get a perfect bird well before the 50th generation.
+
+```py 
+def run(config_path):
+    ...
+
+    winner = p.run(???, 50) 
+```
+
+<details>
+<summary>What should the function we pass in do?</summary>
+
+Run the game loop, but with 20 birds at the same time. So, we can pass in the main function to this commmand, and the score achieved by each bird will be that bird's fitness!
+
+Be sure to remove the call to `main` from the outermost scope now, since it gets called from in here
+
+</details>
+
+### Collisions and fitness
+
+Now we have to modify `main` to take in `genomes` and `config`. We'll also begin keeping track of generation as a global variable, so it retains its value between calls to main. Each time main runs, however, is a different generation, so we'll increment it at the start.
+
+```py
+GEN = 0
+
 ...
+
+def main(genomes, config): 
+    global GEN
+    GEN += 1
+```
+
+Now, since we want to run this with multiple birds instead of just 1, we have to make a list of birds that the function will work with. Now, for the collision detection, we have to check pipe collisions for ALL the birds, and floor or ceiling collisions for ALL the birds.
+
+```py
+def main(genomes, config):
+    global GEN
+    GEN += 1
+
+    birds = []
+
+    ...
+
+    for pipe in pipes:
+        for x, bird in enumerate(birds):
+            if pipe.collide(bird):
+                # bird dies
+                pass
+
+            if not pipe.passed and pipe.x < bird.x:
+                pipe.passed = True
+                add_pipe = True
+    
+
+    ...
+
+    for x, bird in enumerate(birds):
+        if bird.y + bird.img.get_height() >= 730 or bird.y < 0: # don't let birds go outside of top or bottom of screen to get around pipes
+            # bird dies
+            pass
+```
+
+Recall that each bird corresponds to a neural network, and can be referred to as a genome, so we're going to create two more lists to keep track of these things, whose indexes can correspond to that of birds. What I mean is that the bird object at index 2 of `birds` will "have" the neural network at index 2 of `nets` etc. 
+
+```py
+birds = []
+nets = [] # neural networks
+ge = [] # genomes
+```
+
+We'll now initialize these lists right below that. The first four lines are just the way we're meant to initialize the networks for each genome, as per the documentation. And the last line makes us a bird who gets added to our birds list.
+
+```py
+for _, g in genomes: 
+    net = neat.nn.FeedForwardNetwork.create(g, config)
+    nets.append(net)
+    g.fitness = 0
+    ge.append(g)
+
+    birds.append(Bird(230, 350))
+```
+
+Now we can write the necessary code to "kill" our birds when they collide with a pipe, or the ground. Write the following code in both locations. The first line removes some fitness if they hit the pipe, so that there is some differentiation between birds who have the same score, one of whom hit the pipe and one of whom continued.
+
+```py
+ge[x].fitness -= 1
+birds.pop(x)
+nets.pop(x)
+ge.pop(x)
+```
+
+Make sure to change both your for loops to
+```py
+for x, bird in enumerate(birds):
+```
+so you can use the `x` index variable.
+
+We're also going to encourage birds to go through the pipe by adding fitness whenever that happens.
+
+```py
+if add_pipe:
+    score += 1
+    for g in ge:
+        g.fitness += 5
+    pipes.append(Pipe(700))
+```
+
+<details>
+<summary>Wouldn't this code just add fitness to every bird regardless, since we're looping through all genomes?</summary>
+
+No, since the birds that have already collided get removed earlier.
+
+</details>
+
+### Moving and Jumping
+
+Okay so now we have some fitness-related adjustments happening, but we haven't actually written code to make the bird move, fed anything to the neural networks, or written any code to make the bird jump. Recall that we're going to pass in some input data to the neural network, for each bird at each tick, and based on that it will make a decision to jump. With our tanh activation function we're decidng that a value greater than `0.5` will mean the bird should jump.
+
+Note that output will come in a list, and we have to go to its 0th index. That's because sometimes the output layer has more than one neuron.
+
+```py
+
+while run:
+
+    ...
+
+    for x, bird in enumerate(birds):
+        bird.move() # move at every tick
+        ge[x].fitness += 0.1 # give it a little fitness when it stays alive at each tick
+
+        # evaluate neural network from input data, get output value
+
+        if output[0] > 0.5:
+            bird.jump()
+
+```
+
+Before we can write the code to evaluate the neural network, we have to determine which pipe we're looking at in order to get its top and bottom y values. There will always only be two pipes in the list, so we can choose between index 0 and 1 with the following.
+
+Note that we're also checking if the birds list is empty before doing any of this, because 1) we're using birds as if it's not empty later in the while loop, and 2) that means all birds are dead so we should exit the game loop, since our generation is over.
+
+```py
+pipe_ind = 0
+if len(birds) > 0:
+    if len(pipes) > 1 and birds[0].x  > pipes[0].x + pipes[0].PIPE_TOP.get_width():
+        pipe_ind = 1
+else:
+    run = False
+    break
+```
+
+Now that we've figured out what pipe in the list we're looking at to determine our neural network inputs, we can replace our comment from earlier with the following to activate a neural network with our 3 inputs:
+1. The bird's y
+2. The bird's distance from the top pipe
+3. The bird's distance from the bottom pipe
+
+```py
+output = nets[x].activate((bird.y,
+        abs(bird.y - pipes[pipe_ind].height),
+        abs(bird.y - pipes[pipe_ind].bottom)))
+```
+
+
+### Drawing
+We need to slightly change our draw_window function, by the way, since we have a list of birds instead of a single bird now. We can also print the generation of the model on the screen, along with score. Make sure to change not just the declaration, but where the function is called too!
+
+```py
+def draw_window(win, birds, pipes, base, score, gen):
+
+    ...
+    
+    text = STAT_FONT.render("Gen: " + str(gen), 1, (255,255,255))
+    win.blit(text, (10, 10))
+
+    base.draw(win)
+    for bird in birds:
+        bird.draw(win)
+    pygame.display.update()
+```
+
+
+### Cleaning up
+
+Since `main` is no longer our main function, we can
+1. Rename it to `eval_genomes`, just for good practice, so it's clearer what it does
+2. Move the `pygame.quit()` and `return` lines from outside the loop, to after our confitional checking for `pygame.QUIT`
+    1. We want to run multiple generations, not quit every time we're outside the game loop.
+    2. Also change `return` to `quit()` since returning from main won't exit the program anymore
+    ```py
+    while run:
+        clock.tick(30)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: # red X in top corner of pygame window
+                run = False
+                pygame.quit()
+                quit()
+    ```
+
+___
+
+With all that done, your code should be done and ready to run! Enjoy watching your generations of birds learn how to flap!
+
+
+```
+python flappy_bird_ai.py
+```
