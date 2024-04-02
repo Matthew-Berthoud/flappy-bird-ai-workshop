@@ -115,9 +115,15 @@ The NEAT model in particular does some specific things we won't get into in orde
 For more information about NEAT, the original researchers who developed NEAT wrote a somewhat digestible 6-page paper you can find [here](https://nn.cs.utexas.edu/downloads/papers/stanley.cec02.pdf). Also, refer to the NEAT python API [here](https://neat-python.readthedocs.io/en/latest/). 
 
 
-## Let's code
+### NEAT python configuration
 Now that we've talked conceptually about what we're going to do, we can dive into doing it! Go ahead and open the `config-feedforward.txt` file we had you copy/download. This file is required by the NEAT Python API in order to conduct the Neuroevolution algorithm. 
 
 Lots of this is the default settings, and we won't get into all of it(again, I encourage you to read more for yourself from [the documentation](https://neat-python.readthedocs.io/en/latest/)), but we'll touch on some key settings. 
 
 First look at
+
+...
+
+## Let's code
+
+...
